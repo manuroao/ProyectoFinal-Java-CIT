@@ -1,0 +1,4 @@
+LATAM Airlines,Económica,Económica Premium,Ejecutiva
+Copa Airlines,Económica,Ejecutiva,Económica Plus
+Aerolíneas Argentinas,Económica,Ejecutiva,Club Cóndor
+Avianca,Económica,Ejecutiva,Primera Clase

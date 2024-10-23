@@ -1,0 +1,10 @@
+Paraguay,Argentina,10/15/2024,LATAM Airlines,1
+Paraguay,Brasil,10/16/2024,Copa Airlines,2
+Argentina,Chile,10/17/2024,Aerolíneas Argentinas,3
+Perú,Colombia,10/18/2024,Avianca,4
+México,Estados Unidos,10/18/2024,LATAM Airlines,5
+España,Francia,10/20/2024,LATAM Airlines,6
+Uruguay,Paraguay,10/21/2024,Aerolíneas Argentinas,7
+Bolivia,Argentina,10/22/2024,Avianca,8
+Ecuador,Panamá,10/23/2024,Copa Airlines,9
+Venezuela,Brasil,10/24/2024,LATAM Airlines,10

@@ -1,0 +1,6 @@
+Económica,100,100
+Económica Premium,150,40
+Ejecutiva,200,50
+Económica Plus,120,40
+Club Cóndor,250,20
+Primera Clase,350,16
