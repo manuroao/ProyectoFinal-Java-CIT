@@ -3,8 +3,11 @@ public class Reservas {
     private boolean estado;
     private double costo;
     private int cantidad;
-
     private Categorias categoria;
+
+    private int id;
+
+    private static int IDs = 1;
 
     public Reservas(Vuelos vuelo, int cantidad, Categorias categoria, boolean estado) {
         this.vuelo = vuelo;
@@ -12,6 +15,8 @@ public class Reservas {
         this.categoria = categoria;
         this.costo = categoria.getCosto() * cantidad;
         this.estado = estado;
+        this.id = id;
+        IDs++;
     }
     public Reservas(Vuelos vuelo, int cantidad, Categorias categoria) {
         this.vuelo = vuelo;
@@ -19,6 +24,11 @@ public class Reservas {
         this.cantidad = cantidad;
         this.costo = categoria.getCosto() * cantidad;
         this.categoria = categoria;
+    }
+
+
+    public int getId() {
+        return this.id;
     }
 
     public Vuelos getVuelo() {

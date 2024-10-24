@@ -1,0 +1,4 @@
+LATAM Airlines,Económica,Primera Clase
+Copa Airlines,Económica,Primera Clase
+Aerolíneas Argentinas,Económica,Primera Clase
+Avianca,Económica,Primera Clase

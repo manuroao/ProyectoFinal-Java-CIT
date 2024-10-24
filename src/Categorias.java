@@ -9,7 +9,7 @@ public class Categorias {
     private int costo;
     private int cantidad;
 
-    private final static String CATEGORIAS_FILE = "resources/categorias.txt";
+    private final static String CATEGORIAS_FILE = "resources/categorias2.txt";
 
     private static final HashMap<String, int[]> datosCategorias = new HashMap<>();
 
@@ -27,6 +27,10 @@ public class Categorias {
         }
     }
 
+    /**
+     * Se cargan los datos de las categorias, el objetivo de esta función es leer de un arachivo "categorias.txt"
+     * y obtener el precio y la cantidad de cada categoría con cada aerolínea
+     */
     private void cargarDatos() {
 
         if(!datosCategorias.isEmpty()) return; // Se realiza la carga de los datos solamente una vez
@@ -46,9 +50,6 @@ public class Categorias {
         }
     }
 
-    public static void agregarCategorias() {
-
-    }
     public String getNombre() {
         return this.nombre;
     }

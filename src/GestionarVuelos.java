@@ -13,27 +13,35 @@ public class GestionarVuelos {
 
     private static Scanner scanner = new Scanner(System.in);
 
+    // Sirve para establecer un formato establecido al tipo LocalDate que se utilizará para las fechas
+    private static DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+    /**
+     * Pide al usuario los datos sobre el vuelo, lo guarda en el ArrayList<Vuelos> de la clase Vuelos
+     * y también escribe el nuevo vuelo en el archivo "vuelos.txt"
+     */
     public static void agregarVuelo() {
         // Se encarga de dar formato a la fecha -> MM/dd/yyyy
-        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String origen = validarNombre("Origen");
         String destino = validarNombre("Destino");
-        String aerolinea = validarNombre("Aerolinea");
+        String aerolineaString = validarNombre("Aerolinea");
         LocalDate fecha = obtenerFecha();
 
-        if (origen.isEmpty() || destino.isEmpty() || (fecha == null)) {
+        if (origen.isEmpty() || destino.isEmpty() || (fecha == null) || aerolineaString.isEmpty()) {
             System.out.println("\n***ES NECESARIO TODOS LOS DATOS DEL VUELO***\n");
             return;
         }
-
-        Vuelos vuelo = new Vuelos(origen, destino, fecha, new Aerolineas(aerolinea));
+        Aerolineas aerolinea = new Aerolineas(aerolineaString);
+        Vuelos vuelo = new Vuelos(origen, destino, fecha, aerolinea);
         Vuelos.agregarVuelo(vuelo);
-        try(BufferedWriter texto = new BufferedWriter(new FileWriter("resources/vuelos.txt", true))) {
+        try(BufferedWriter texto = new BufferedWriter(new FileWriter("resources/vuelos2.txt", true))) {
             // Escribimos en el archivo, el último usuario creado
-            texto.write("\n" + origen + "," +
-                    destino + "," +
-                    (String) fecha.format(formatoFecha) + "," +
-                    aerolinea
+            texto.write("\n" + vuelo.getOrigen() + "," +
+                    vuelo.getDestino() + "," +
+                    (String) vuelo.getFecha().format(formatoFecha) + "," +
+                    aerolinea.getNombre() + "," +
+                    vuelo.getId() + "," +
+                    "100,50"
             );
         } catch (IOException e) {
             System.out.println(e);
@@ -42,6 +50,11 @@ public class GestionarVuelos {
 
     }
 
+    /**
+     * Permite al usuario reservar un vuelo si así lo desea
+     * @param actual
+     * @param vuelosDisponibles
+     */
     public static void reservarVuelo(Usuarios actual, ArrayList<Vuelos> vuelosDisponibles) {
         int opcion = 0, cantidad;
 
@@ -61,12 +74,46 @@ public class GestionarVuelos {
 
         categoria.setCantidad(cantidad);
 
+        // Se Obtienen las cantidades disponibles por categoría
+        int cantidadEconomica = vuelo.getAerolinea().getCategorias().get(0).getCantidad();
+        int cantidadPrimeraClase = vuelo.getAerolinea().getCategorias().get(1).getCantidad();
+
+        if (cantidadEconomica == 0 && cantidadPrimeraClase == 0)
+            Vuelos.eliminarVuelo(vuelo);
+
         Reservas nuevaReserva = new Reservas(vuelo, cantidad, categoria);
         actual.agregarReserva(nuevaReserva);
-
+        actualizarArchivoVuelo();
 
     }
 
+    /**
+     * Se actualiza el archivo de vuelo en caso de que un vuelo haya sido agregado o eliminado
+     */
+    public static void actualizarArchivoVuelo() {
+        String linea = "";
+
+        try(BufferedWriter texto = new BufferedWriter(new FileWriter("resources/vuelos2.txt"))) {
+            // Escribimos en el archivo, el último usuario creado
+            for(Vuelos vuelo: Vuelos.getVuelos()) {
+                int cantidadEconomica = vuelo.getAerolinea().getCategorias().get(0).getCantidad();
+                int cantidadPrimeraClase = vuelo.getAerolinea().getCategorias().get(1).getCantidad();
+                if (cantidadPrimeraClase == 0 && cantidadEconomica == 0) continue;
+                linea = vuelo.getOrigen() + "," + vuelo.getDestino() + "," + vuelo.getFecha().format(formatoFecha) + "," +
+                        vuelo.getAerolinea().getNombre() + "," + vuelo.getId() + "," +
+                        vuelo.getAerolinea().getCategorias().get(0).getCantidad() + "," +
+                        vuelo.getAerolinea().getCategorias().get(1).getCantidad() + "\n";
+                texto.write(linea);
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Busca los vuelos disponibles de acuerdo a los filtros del usuario
+     * @return
+     */
     public static ArrayList<Vuelos> buscarVuelos() {
         ArrayList<Vuelos> vuelosDisponibles = new ArrayList<>();
         String origen = validarNombre("Origen");
@@ -80,6 +127,32 @@ public class GestionarVuelos {
         }
         return vuelosDisponibles;
 
+    }
+
+    /**
+     * Verifica si el vuelo coincide con los filtros
+     * @param vuelo
+     * @param origen
+     * @param destino
+     * @param fecha
+     * @return
+     */
+    private static boolean vueloCoincide(Vuelos vuelo, String origen, String destino, LocalDate fecha) {
+        // Filtra por origen si fue ingresado
+        if (!origen.isEmpty() && !vuelo.getOrigen().equalsIgnoreCase(origen)) {
+            return false; // Si el origen no coincide, pasa al siguiente vuelo
+        }
+
+        // Filtra por destino si fue ingresado
+        if (!destino.isEmpty() && !vuelo.getDestino().equalsIgnoreCase(destino)) {
+            return false; // Si el destino no coincide, pasa al siguiente vuelo
+        }
+
+        // Filtra por fecha si fue ingresada
+        if (fecha != null && !vuelo.getFecha().equals(fecha)) {
+            return false; // Si la fecha no coincide, pasa al siguiente vuelo
+        }
+        return true;
     }
 
     /**
@@ -156,24 +229,11 @@ public class GestionarVuelos {
         return fecha;
     }
 
-    private static boolean vueloCoincide(Vuelos vuelo, String origen, String destino, LocalDate fecha) {
-        // Filtra por origen si fue ingresado
-        if (!origen.isEmpty() && !vuelo.getOrigen().equalsIgnoreCase(origen)) {
-            return false; // Si el origen no coincide, pasa al siguiente vuelo
-        }
-
-        // Filtra por destino si fue ingresado
-        if (!destino.isEmpty() && !vuelo.getDestino().equalsIgnoreCase(destino)) {
-            return false; // Si el destino no coincide, pasa al siguiente vuelo
-        }
-
-        // Filtra por fecha si fue ingresada
-        if (fecha != null && !vuelo.getFecha().equals(fecha)) {
-            return false; // Si la fecha no coincide, pasa al siguiente vuelo
-        }
-        return true;
-    }
-
+    /**
+     * Menú para elegir la cantidad de asientos
+     * @param categoria
+     * @return
+     */
     private static int elegirCantidad(Categorias categoria) {
         int cantidad;
         do {
@@ -196,6 +256,11 @@ public class GestionarVuelos {
         return cantidad;
     }
 
+    /**
+     * Menú para elegír la categoría deseada
+     * @param vuelo
+     * @return
+     */
     private static int elegirCategoria(Vuelos vuelo) {
         ArrayList<Integer> categoriasDisponibles = new ArrayList<>();
         categoriasDisponibles.add(0); // Para que el usuario pueda cancelar la reserva
@@ -231,6 +296,12 @@ public class GestionarVuelos {
         return opcion;
     }
 
+
+    /**
+     * Menú para elegír cual vuelo quiere realizar el usuario
+     * @param vuelosDisponibles
+     * @return
+     */
     private static int elegirVuelo(ArrayList<Vuelos> vuelosDisponibles) {
         int opcion;
         do {
@@ -253,6 +324,11 @@ public class GestionarVuelos {
         return opcion;
     }
 
+    /**
+     * Verifica si el vuelo aún tiene asientos disponibles
+     * @param vuelo
+     * @return
+     */
     private static boolean tieneAcientosDisponibles(Vuelos vuelo) {
 
         for(Categorias categoria: vuelo.getAerolinea().getCategorias()) {
@@ -263,30 +339,18 @@ public class GestionarVuelos {
         return false;
     }
 
+    /**
+     * Imprime todos los vuelos que cumplan con los filtros establecidos por el usuario
+     * @param vuelosDisponibles
+     */
     public static void imprimirVuelos(ArrayList<Vuelos> vuelosDisponibles) {
-//        int cantidad = 1;
-//        for (Vuelos vuelo: vuelosDisponibles) {
-////            System.out.print(cantidad);
-//            System.out.println("=======================================");
-//            System.out.println(vuelo);
-//            System.out.println("Categorias disponibles: ");
-//            System.out.println("=======================================");
-//            for(Categorias categoria: vuelo.getAerolinea().getCategorias()) {
-//                if (categoria.getCantidad() > 0) {
-//                    System.out.println(categoria.getNombre() + " - " + "Costo: " + categoria.getCosto());
-//                }
-//            }
-//            System.out.println();
-//            cantidad++;
-//        }
         int cantidad = 1;
 
-        // Cabecera de la tabla
+        // Cabecera
         System.out.printf("%-5s %-15s %-15s %-15s %-20s%n", "No.", "Origen", "Destino", "Fecha", "Aerolínea");
         System.out.println("=====================================================================");
 
         for (Vuelos vuelo : vuelosDisponibles) {
-//            imprimirVuelo(vuelo);
             // Imprimir los detalles del vuelo
             System.out.printf("%-5d %-15s %-15s %-15s %-20s%n", cantidad, vuelo.getOrigen(), vuelo.getDestino(), vuelo.getFecha(), vuelo.getAerolinea().getNombre());
 

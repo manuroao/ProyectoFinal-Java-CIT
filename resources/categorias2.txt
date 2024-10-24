@@ -1,0 +1,2 @@
+Económica,100,100
+Primera Clase,200,50

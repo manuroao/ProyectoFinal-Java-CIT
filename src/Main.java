@@ -1,7 +1,4 @@
-import java.util.HashMap;
-
 public class Main {
-    static HashMap<String, Usuarios> usuariosHashMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -33,7 +30,7 @@ public class Main {
                     break;
                 case 3:
                     if(Usuarios.iniciarAdministrador())
-                        Menus.menuAdministrador();
+                        if(Menus.menuAdministrador());
                     break;
                 default:
                     System.out.println("\n***NO PERMITIDO***\n");

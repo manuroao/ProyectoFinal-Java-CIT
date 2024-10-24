@@ -65,7 +65,7 @@ public class Menus {
                     actual.verReservas();
                     break;
                 case 3:
-                    System.out.println("Pagar Vuelo");
+                    actual.pagarVuelo();
                     break;
                 default:
                     System.out.println("\n***OPCIÓN INCORRECTA***\n");
@@ -76,7 +76,7 @@ public class Menus {
         return false;
     }
 
-    public static void menuAdministrador() {
+    public static boolean menuAdministrador() {
         int opcion;
         do {
             System.out.println("=======================================");
@@ -99,14 +99,15 @@ public class Menus {
 
             switch (opcion) {
                 case 0:
-                    return;
+                    return false;
                 case 1:
                     GestionarVuelos.agregarVuelo();
-                    break;
+                    return true;
                 default:
                     System.out.println("\n***OPCIÓN INCORRECTA***\n");
             }
 
         } while (opcion != 0);
+        return false;
     }
 }

@@ -1,6 +1,2 @@
-manuroao,2975
-manuroao2,2574
-manuroao3,8268
-manuroao4,2221
-pedroroao,1234
-manuel,1234
+manuroao,1234
+pedro,1111

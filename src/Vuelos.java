@@ -26,9 +26,18 @@ public class Vuelos {
         IDs++;
     }
 
+    /**
+     * Agrega un nuevo vuelo al ArrayList vuelos donde se almacenan todos los vuelos, tambíen se utilizó un HashMap
+     * para agregar funcionalidades, pero no se concluyo con lo propuesto
+     * @param vuelo
+     */
     public static void agregarVuelo(Vuelos vuelo) {
         vuelos.add(vuelo);
         vuelosHash.put(vuelo.getId(), vuelo);
+    }
+
+    public static void eliminarVuelo(Vuelos vuelo) {
+        vuelos.remove(vuelo);
     }
 
     public String getOrigen() {
@@ -59,16 +68,21 @@ public class Vuelos {
         return vuelos;
     }
 
+    /**
+     * Lee los vuelos del archivo "vuelos.txt" simulando una base de datos, donde los datos están separados
+     * por coma
+     */
     public static void leerVuelos() {
-        Path path = Path.of("resources/vuelos.txt");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        Path path = Path.of("resources/vuelos2.txt");
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("MM/dd/yyyy"); // MM-dd-yyyy
         try (BufferedReader lector = Files.newBufferedReader(path)) {
             String linea = null;
             while ((linea = lector.readLine()) != null) {
+                if (linea.isEmpty()) continue;
                 String[] datos = linea.split(",");
                 String origen = datos[0];
                 String destino = datos[1];
-                LocalDate fecha = LocalDate.parse(datos[2], formatter);
+                LocalDate fecha = LocalDate.parse(datos[2], formatoFecha);
                 Aerolineas aerolinea = new Aerolineas(datos[3]);
                 Vuelos vuelo = new Vuelos(origen, destino, fecha, aerolinea);
                 vuelos.add(vuelo);
